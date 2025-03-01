@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(your_solution)
+project(your_sol) 
 
 # Default to C99
 if (NOT CMAKE_C_STANDARD)
@@ -19,9 +19,12 @@ endif ()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(image_transport REQUIRED)
+find_package(cv_bridge REQUIRED)
 
 add_executable(robo_spin_sol src/robo_spin_sol.cpp src/robo_spin_sol.h)
-ament_target_dependencies(robo_spin_sol rclcpp std_msgs)
+ament_target_dependencies(robo_spin_sol rclcpp std_msgs sensor_msgs image_transport cv_bridge)
 
 install(TARGETS
         robo_spin_sol

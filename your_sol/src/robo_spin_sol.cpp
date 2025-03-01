@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
   }
   
   //your code here
-  RoboSpinSolution::RoboSpinSolution() : Node("robospinsolution"), count_(0) {
+  RoboSpinSolution::RoboSpinSolution() : Node("robo_spin_sol"), count_(0) {
 
     // subsription_cam = this->create_subscription<ArrayMsg>
     subscription_angle = this->create_subscription<Angle>(
@@ -24,20 +24,21 @@ int main(int argc, char *argv[]) {
   // receive angle and update curr_angle variable to be processed
   void RoboSpinSolution::topic_callback_angle(const Angle &msg)
   {
-    RCLCPP_INFO(this->get_logger(), "I heard position %f", msg);
+    RCLCPP_INFO(this->get_logger(), "I heard position %f", msg.data);
     curr_angle = msg;
   }
 
   // receive ros2 image and image process via OpenCV
   void RoboSpinSolution::topic_callback_img(const Image &msg)
   {
-
+    cv::namedWindow(OPENCV_WINDOW);
     cv_bridge::CvImagePtr cv_ptr;
 
     // attempts to set cv_ptr
     try
     {
         cv_ptr = cv_bridge::toCvCopy(msg, msg->encoding);
+        RCLCPP_ERROR(this->get_logger(), "cv_bridge exception:");
     }
     catch (cv_bridge::Exception &e)
     {
@@ -45,11 +46,18 @@ int main(int argc, char *argv[]) {
         return;
     }
 
+    cv::imshow(OPENCV_WINDOW, cv_ptr->image);
+    cv::waitKey(3);
 
-
-    ros2img = msg;
-
+    ros2img = cv_ptr->toImageMsg();
   }
+
+  RoboSpinSolution::~RoboSpinSolution()
+  {
+    cv::destroyWindow(OPENCV_WINDOW);
+  }
+
+
 
   void RoboSpinSolution::timer_callback()
   {
